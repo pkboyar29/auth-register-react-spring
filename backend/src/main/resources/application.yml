@@ -16,3 +16,7 @@ info:
     description: Spring Boot Application
 server:
   port: 8080
+
+#security:
+#  basic:
+#    enabled: false
