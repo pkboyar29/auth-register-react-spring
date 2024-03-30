@@ -18,7 +18,9 @@ info:
     description: Spring Boot Application
 server:
   port: 8080
-
+recaptcha:
+  secret-key: 6LdxW4gpAAAAAADaJUivpSImYHE2gfcPJWPlR7MI
+  verify-url: https://www.google.com/recaptcha/api/siteverify
 #security:
 #  basic:
 #    enabled: false
