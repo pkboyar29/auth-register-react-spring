@@ -41,7 +41,7 @@ function PersonalAccountPage() {
 	}
 
 	useEffect(() => {
-		if (Cookies.get('refresh_token') !== undefined && Cookies.get('access_token') !== undefined) {
+		if (Cookies.get('refresh_token') !== undefined) {
 
 			// сначала проверка на то, не истек ли access токен
 			updateAccessToken()
@@ -114,7 +114,7 @@ function PersonalAccountPage() {
 
 	return (
 		<div className={theme === 'dark' ? 'darkBackground' : ''}>
-			{Cookies.get('access_token') !== undefined && Cookies.get('refresh_token') !== undefined ? (
+			{Cookies.get('refresh_token') !== undefined ? (
 				<>
 					<div className={"header " + (theme === 'dark' ? "darkHeader" : '')}>
 						<div onClick={handleChangeTheme} className={"header__theme " + (theme === 'dark' ? "darkButton" : '')}>{changeThemeButtonText}</div>

@@ -106,7 +106,7 @@ function RegisterPage() {
                <div className="label">
                   <div className="label__title">Имя</div>
                   <input
-                     {...register('first_name', {
+                     {...register('firstName', {
                         required: "Поле обязательно к заполнению",
                         minLength: {
                            value: 2,
@@ -134,7 +134,7 @@ function RegisterPage() {
                <div className="label">
                   <div className="label__title">Фамилия</div>
                   <input
-                     {...register('last_name', {
+                     {...register('lastName', {
                         required: "Поле обязательно к заполнению",
                         minLength: {
                            value: 2,
@@ -306,7 +306,7 @@ function RegisterPage() {
 
             {/* DROPDOWN MENU: AGE */}
             <div className="age__title">Возраст</div>
-            <select className="age__select" {...register('age_limit', { required: "Выберите возраст" })}>
+            <select className="age__select" {...register('ageLimit', { required: "Выберите возраст" })}>
                <option value="">Выберите возраст</option>
                <option value="18">Мне 18 лет</option>
                <option value="not18">Нет 18 лет</option>
@@ -315,7 +315,7 @@ function RegisterPage() {
             {/* ACCEPT RULES */}
             <label className="accept__label">
                <input
-                  {...register('accept_rules')}
+                  {...register('acceptRules')}
                   type="checkbox"
                />
                Принимаю правила соглашения

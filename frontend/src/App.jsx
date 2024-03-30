@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/auth" element={Cookies.get('refresh_token') === undefined ? <AuthPage /> : <Navigate to="/personal-account" />}></Route>
-        <Route path="/register" element={<RegisterPage />}></Route>
+        <Route path="/register" element={Cookies.get('refresh_token') === undefined ? <RegisterPage /> : <Navigate to="/personal-account" />}></Route>
         <Route path="/personal-account" element={<PersonalAccountPage />}></Route>
         <Route path="/" element={<Navigate to="/auth" />} />
       </Routes>
