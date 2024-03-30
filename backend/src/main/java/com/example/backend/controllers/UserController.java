@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dto.AuthRequestDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.exceptions.DublicateUserException;
 import com.example.backend.models.User;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/user")
+@RequestMapping(path = "/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -44,6 +45,26 @@ public class UserController {
 
         try {
             userService.saveUser(user);
+            response.put("message", "Successful");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch (DublicateUserException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // это 409 код
+        }
+        catch (Exception e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
+        }
+    }
+
+    @PostMapping(path = "/auth")
+    public ResponseEntity<Map<String, String>> authorize(@RequestBody AuthRequestDTO authRequestDTO) {
+
+        HashMap<String, String> response = new HashMap<>();
+
+        try {
+            userService.verifyCredentials(authRequestDTO);
             response.put("message", "Successful");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }

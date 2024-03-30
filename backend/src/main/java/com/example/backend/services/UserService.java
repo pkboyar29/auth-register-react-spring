@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import com.example.backend.dto.AuthRequestDTO;
 import com.example.backend.exceptions.DublicateUserException;
 import com.example.backend.models.User;
 import com.example.backend.repositories.UserRepository;
@@ -27,5 +28,11 @@ public class UserService {
         }
 
         userRepository.save(user);
+    }
+
+    public void verifyCredentials(AuthRequestDTO authRequestDTO) {
+        if (!userRepository.existsByUsernameAndPassword(authRequestDTO.getUsername(), authRequestDTO.getPassword())) {
+            throw new DublicateUserException("User with this username doesn't exists or password invalid");
+        }
     }
 }

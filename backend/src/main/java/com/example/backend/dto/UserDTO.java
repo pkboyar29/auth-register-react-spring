@@ -11,17 +11,6 @@ public class UserDTO {
     private Boolean acceptRules;
 
     public UserDTO() { }
-    public UserDTO(String username, String firstName, String lastName, String email, String password,
-                   String ageLimit, String gender, Boolean acceptRules) {
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.ageLimit = ageLimit;
-        this.gender = gender;
-        this.acceptRules = acceptRules;
-    }
     public String getUsername() {
         return username;
     }
