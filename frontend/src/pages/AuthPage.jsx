@@ -69,7 +69,7 @@ function AuthPage() {
 
    const onChangeCaptcha = (value) => {
 
-      fetch('http://127.0.0.1:8000/api/checkCaptchaToken', {
+      fetch('http://127.0.0.1:8080/api/captcha/verify-token', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'
@@ -80,6 +80,9 @@ function AuthPage() {
             switch (response.status) {
                case 200:
                   setCaptchaPassed(true)
+                  return
+               case 400:
+                  setCaptchaPassed(false)
                   return
                case 500:
                   setCaptchaPassed(false)
