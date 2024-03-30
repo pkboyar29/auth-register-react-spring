@@ -44,10 +44,11 @@ public class UserController {
         try {
             userService.saveUser(user);
             response.put("message", "Successful");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
         catch (DublicateUserException e) {
             response.put("message", e.getMessage());
+            response.put("error-code", e.getErrorCode());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // это 409 код
         }
         catch (Exception e) {

@@ -39,7 +39,9 @@ function RegisterPage() {
    const onSubmit = (data) => {
       delete data.confirmPassword
 
-      fetch('http://127.0.0.1:8000/api/register', {
+      console.log(data)
+
+      fetch('http://127.0.0.1:8080/api/users/register', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'
@@ -50,19 +52,32 @@ function RegisterPage() {
             switch (response.status) {
                case 201:
                   return response.json()
-                     .then(data => {
-                        const { access_token, refresh_token } = data
+                     .then(responseBody => {
+                        const { access_token, refresh_token } = responseBody
                         Cookies.set('access_token', access_token)
                         Cookies.set('refresh_token', refresh_token)
                         alert("Регистрация успешна!")
                         navigate('/personal-account')
                      })
-               case 403:
-                  setError('username', {
-                     type: 'manual',
-                     message: 'Пользователь с таким логином уже существует'
-                  })
-                  return
+               case 409:
+                  return response.json()
+                     .then(responseBody => {
+                        console.log(responseBody)
+                        if (responseBody["error-code"] === "DUPLICATE_USERNAME") {
+                           setError('username', {
+                              type: 'manual',
+                              message: 'Пользователь с таким логином уже существует'
+                           })
+                        }
+                        if (responseBody["error-code"] === "DUPLICATE_EMAIL") {
+                           setError('email', {
+                              type: 'manual',
+                              message: 'Пользователь с такой электронной почтой уже существует'
+                           })
+                        }
+                     })
+
+
                default:
                   console.log(response.text())
                   return
@@ -73,7 +88,7 @@ function RegisterPage() {
 
    const onChangeCaptcha = (value) => {
 
-      fetch('http://127.0.0.1:8000/api/checkCaptchaToken', {
+      fetch('http://127.0.0.1:8080/api/captcha/verify-token', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'
@@ -84,6 +99,9 @@ function RegisterPage() {
             switch (response.status) {
                case 200:
                   setCaptchaPassed(true)
+                  return
+               case 400:
+                  setCaptchaPassed(false)
                   return
                case 500:
                   setCaptchaPassed(false)
@@ -308,8 +326,8 @@ function RegisterPage() {
             <div className="age__title">Возраст</div>
             <select className="age__select" {...register('ageLimit', { required: "Выберите возраст" })}>
                <option value="">Выберите возраст</option>
-               <option value="18">Мне 18 лет</option>
-               <option value="not18">Нет 18 лет</option>
+               <option value="over18">Мне 18 лет</option>
+               <option value="under18">Нет 18 лет</option>
             </select>
 
             {/* ACCEPT RULES */}

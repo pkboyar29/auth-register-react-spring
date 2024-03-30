@@ -27,11 +27,11 @@ public class UserService {
         user.setPassword(encodedPassword);
 
         if (userRepository.existsByUsername(user.getUsername())) {
-            throw new DublicateUserException("User with this username already exists");
+            throw new DublicateUserException("DUPLICATE_USERNAME", "User with this username already exists");
         }
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new DublicateUserException("User with this email already exists");
+            throw new DublicateUserException("DUPLICATE_EMAIL", "User with this email already exists");
         }
 
         userRepository.save(user);
@@ -39,7 +39,7 @@ public class UserService {
 
     public void verifyCredentials(AuthRequestDTO authRequestDTO) {
         if (!userRepository.existsByUsername(authRequestDTO.getUsername())) {
-            throw new DublicateUserException("User with this username doesn't exists");
+            throw new DublicateUserException("DUPLICATE_USERNAME", "User with this username doesn't exists");
         }
 
         User user = userRepository.findByUsername(authRequestDTO.getUsername());
@@ -47,7 +47,8 @@ public class UserService {
         String encodedPasswordFromDB = user.getPassword();
 
         if (!passwordEncoder.matches(rawPassword, encodedPasswordFromDB)) {
-            throw new DublicateUserException("Password and username don't match");
+            // дропаю ошибку, у которой вообще название не осмысленное?
+            throw new DublicateUserException("INVALID_PASSWORD", "Password and username don't match");
         }
     }
 }
