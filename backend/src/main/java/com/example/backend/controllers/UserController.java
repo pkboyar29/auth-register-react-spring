@@ -1,6 +1,7 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dto.UserDTO;
+import com.example.backend.exceptions.DublicateUserException;
 import com.example.backend.models.User;
 import com.example.backend.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Map<String, String>> register(@RequestBody UserDTO userDTO) {
 
         User user = new User();
         user.setUsername(userDTO.getUsername());
@@ -39,9 +40,20 @@ public class UserController {
         user.setTheme("light");
         user.setCreated(LocalDateTime.now());
 
-        userService.saveUser(user);
-        // как-то обрабатывать ответ от сервиса??? или через exceptions делать
+        HashMap<String, String> response = new HashMap<>();
 
-        return ResponseEntity.status(HttpStatus.OK).body("Successful");
+        try {
+            userService.saveUser(user);
+            response.put("message", "Successful");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch (DublicateUserException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // это 409 код
+        }
+        catch (Exception e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
+        }
     }
 }
