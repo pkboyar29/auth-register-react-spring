@@ -10,6 +10,10 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByUsername(String username);
     Boolean existsByEmail (String email);
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END FROM User u WHERE u.username = :username AND u.password = :password")
-    Boolean checkPasswordByUsername(@Param("username") String username, @Param("password") String password);
+
+    // тут можно использовать Optional<User>
+    User findByUsername (String username);
+
+//    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END FROM User u WHERE u.username = :username AND u.password = :password")
+//    Boolean checkPasswordByUsername(@Param("username") String username, @Param("password") String password);
 }
