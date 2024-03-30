@@ -1,54 +1,26 @@
-package com.example.backend.models;
+package com.example.backend.dto;
 
-import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
-
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name="users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
-    private Long id;
-
-    @Column(name = "username", unique = true, nullable = false)
+public class UserDTO {
     private String username;
-
-    @Column(name = "first_name", nullable = false)
     private String firstName;
-
-    @Column(name = "last_name", nullable = false)
     private String lastName;
-
-    @Column(name = "email", unique = true, nullable = false)
     private String email;
-
-    @Column(name = "password", nullable = false)
     private String password;
-
-    @Column(name = "age_limit", nullable = false)
     private String ageLimit;
-
-    @Column(name = "gender", nullable = false)
     private String gender;
-
-    @Column(name = "accept_rules", nullable = false)
     private Boolean acceptRules;
 
-    @Column(name = "theme", nullable = false)
-    private String theme;
-
-    @Column(name = "created")
-    private LocalDateTime created;
-
-    public User() { }
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
+    public UserDTO() { }
+    public UserDTO(String username, String firstName, String lastName, String email, String password,
+                   String ageLimit, String gender, Boolean acceptRules) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.ageLimit = ageLimit;
+        this.gender = gender;
+        this.acceptRules = acceptRules;
     }
     public String getUsername() {
         return username;
@@ -97,17 +69,5 @@ public class User {
     }
     public void setAcceptRules(Boolean acceptRules) {
         this.acceptRules = acceptRules;
-    }
-    public String getTheme() {
-        return theme;
-    }
-    public void setTheme(String theme) {
-        this.theme = theme;
-    }
-    public LocalDateTime getCreated() {
-        return created;
-    }
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
     }
 }
