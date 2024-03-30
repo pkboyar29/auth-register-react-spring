@@ -31,8 +31,12 @@ public class UserService {
     }
 
     public void verifyCredentials(AuthRequestDTO authRequestDTO) {
-        if (!userRepository.existsByUsernameAndPassword(authRequestDTO.getUsername(), authRequestDTO.getPassword())) {
-            throw new DublicateUserException("User with this username doesn't exists or password invalid");
+        if (!userRepository.existsByUsername(authRequestDTO.getUsername())) {
+            throw new DublicateUserException("User with this username doesn't exists");
+        }
+
+        if (!userRepository.checkPasswordByUsername(authRequestDTO.getUsername(), authRequestDTO.getPassword())) {
+            throw new DublicateUserException("Password and username don't match");
         }
     }
 }
