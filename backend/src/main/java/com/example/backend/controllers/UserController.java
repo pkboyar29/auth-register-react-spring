@@ -2,7 +2,8 @@ package com.example.backend.controllers;
 
 import com.example.backend.dto.AuthRequestDTO;
 import com.example.backend.dto.UserDTO;
-import com.example.backend.exceptions.DublicateUserException;
+import com.example.backend.exceptions.AuthenticationFailedException;
+import com.example.backend.exceptions.DuplicateUserException;
 import com.example.backend.models.User;
 import com.example.backend.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ public class UserController {
             response.put("message", "Successful");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
-        catch (DublicateUserException e) {
+        catch (DuplicateUserException e) {
             response.put("message", e.getMessage());
             response.put("error-code", e.getErrorCode());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // это 409 код
@@ -67,8 +68,9 @@ public class UserController {
             response.put("message", "Successful");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
-        catch (DublicateUserException e) {
+        catch (AuthenticationFailedException e) {
             response.put("message", e.getMessage());
+            response.put("error-code", e.getErrorCode());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // это 409 код
         }
         catch (Exception e) {

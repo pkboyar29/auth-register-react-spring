@@ -1,7 +1,8 @@
 package com.example.backend.services;
 
 import com.example.backend.dto.AuthRequestDTO;
-import com.example.backend.exceptions.DublicateUserException;
+import com.example.backend.exceptions.AuthenticationFailedException;
+import com.example.backend.exceptions.DuplicateUserException;
 import com.example.backend.models.User;
 import com.example.backend.repositories.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,18 +21,18 @@ public class UserService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public void saveUser(User user) throws DublicateUserException {
+    public void saveUser(User user) throws DuplicateUserException {
         // дополнительная проверка валидации, бизнес-логика проверок
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
         if (userRepository.existsByUsername(user.getUsername())) {
-            throw new DublicateUserException("DUPLICATE_USERNAME", "User with this username already exists");
+            throw new DuplicateUserException("DUPLICATE_USERNAME", "User with this username already exists");
         }
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new DublicateUserException("DUPLICATE_EMAIL", "User with this email already exists");
+            throw new DuplicateUserException("DUPLICATE_EMAIL", "User with this email already exists");
         }
 
         userRepository.save(user);
@@ -39,7 +40,7 @@ public class UserService {
 
     public void verifyCredentials(AuthRequestDTO authRequestDTO) {
         if (!userRepository.existsByUsername(authRequestDTO.getUsername())) {
-            throw new DublicateUserException("DUPLICATE_USERNAME", "User with this username doesn't exists");
+            throw new AuthenticationFailedException("DUPLICATE_USERNAME", "User with this username doesn't exists");
         }
 
         User user = userRepository.findByUsername(authRequestDTO.getUsername());
@@ -47,8 +48,7 @@ public class UserService {
         String encodedPasswordFromDB = user.getPassword();
 
         if (!passwordEncoder.matches(rawPassword, encodedPasswordFromDB)) {
-            // дропаю ошибку, у которой вообще название не осмысленное?
-            throw new DublicateUserException("INVALID_PASSWORD", "Password and username don't match");
+            throw new AuthenticationFailedException("INVALID_PASSWORD", "Password and username don't match");
         }
     }
 }

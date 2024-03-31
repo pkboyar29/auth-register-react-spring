@@ -30,7 +30,7 @@ function AuthPage() {
    const recaptchaRef = useRef()
 
    const onSubmit = (data) => {
-      fetch('http://127.0.0.1:8000/api/auth', {
+      fetch('http://127.0.0.1:8080/api/users/auth', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'
@@ -41,28 +41,38 @@ function AuthPage() {
             switch (response.status) {
                case 200:
                   return response.json()
-                     .then(data => {
-                        const { access_token, refresh_token } = data
+                     .then(responseBody => {
+                        const { access_token, refresh_token } = responseBody
                         Cookies.set('access_token', access_token)
                         Cookies.set('refresh_token', refresh_token)
                         navigate('/personal-account')
                      })
-               case 401:
-                  setError('password', {
-                     type: 'manual',
-                     message: 'Неверный пароль'
-                  })
-                  recaptchaRef.current.reset()
-                  setCaptchaPassed(false)
-                  return
-               case 404:
-                  setError('username', {
-                     type: 'manual',
-                     message: 'Пользователя с таким логином не существует'
-                  })
-                  recaptchaRef.current.reset()
-                  setCaptchaPassed(false)
-                  return
+               case 409:
+                  return response.json()
+                     .then(responseBody => {
+                        console.log(responseBody)
+                        if (responseBody["error-code"] === "DUPLICATE_USERNAME") {
+                           setError('username', {
+                              type: 'manual',
+                              message: 'Пользователя с таким логином не существует'
+                           })
+                           recaptchaRef.current.reset()
+                           setCaptchaPassed(false)
+                        }
+                        if (responseBody["error-code"] === "INVALID_PASSWORD") {
+                           setError('password', {
+                              type: 'manual',
+                              message: 'Неверный пароль'
+                           })
+                           recaptchaRef.current.reset()
+                           setCaptchaPassed(false)
+                        }
+                     })
+               default:
+                  return response.json()
+                     .then(responseBody => {
+                        console.log(responseBody)
+                     })
             }
          })
    }
@@ -82,9 +92,6 @@ function AuthPage() {
                   setCaptchaPassed(true)
                   return
                case 400:
-                  setCaptchaPassed(false)
-                  return
-               case 500:
                   setCaptchaPassed(false)
                   return
                default:

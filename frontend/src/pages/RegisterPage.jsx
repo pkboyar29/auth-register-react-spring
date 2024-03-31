@@ -39,8 +39,6 @@ function RegisterPage() {
    const onSubmit = (data) => {
       delete data.confirmPassword
 
-      console.log(data)
-
       fetch('http://127.0.0.1:8080/api/users/register', {
          method: 'POST',
          headers: {
@@ -76,14 +74,13 @@ function RegisterPage() {
                            })
                         }
                      })
-
-
                default:
-                  console.log(response.text())
-                  return
+                  return response.json()
+                     .then(responseBody => {
+                        console.log(responseBody)
+                     })
             }
-         }
-         )
+         })
    }
 
    const onChangeCaptcha = (value) => {
@@ -101,9 +98,6 @@ function RegisterPage() {
                   setCaptchaPassed(true)
                   return
                case 400:
-                  setCaptchaPassed(false)
-                  return
-               case 500:
                   setCaptchaPassed(false)
                   return
                default:
