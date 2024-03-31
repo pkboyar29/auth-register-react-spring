@@ -78,4 +78,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
         }
     }
+
+    @GetMapping(path = "/{userId}")
+    public ResponseEntity<Map<String, String>> get_user_data(@PathVariable Long userId) {
+        Map<String, String> response = userService.getByUserId(userId);
+
+        if (response.containsKey("error")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

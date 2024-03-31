@@ -47,7 +47,7 @@ function PersonalAccountPage() {
 			updateAccessToken()
 
 			// выполнение основного запроса к API
-			fetch('http://127.0.0.1:8000/api/user/', {
+			fetch('http://127.0.0.1:8080/api/users/', {
 				method: 'GET',
 				headers: {
 					'Authorization': `Bearer ${Cookies.get('access_token')}`
@@ -57,16 +57,16 @@ function PersonalAccountPage() {
 					switch (response.status) {
 						case 200:
 							return response.json()
-								.then(responseJson => {
-									setFirstName(responseJson['first-name'])
-									setTheme(responseJson['theme'])
+								.then(responseBody => {
+									setFirstName(responseBody['first-name'])
+									setTheme(responseBody['theme'])
 								})
-						case 401:
+						case 404:
 							return response.json()
-								.then(responseJson => console.log(responseJson))
+								.then(responseBody => console.log(responseBody))
 						default:
 							return response.text()
-								.then(responseText => console.log(responseText))
+								.then(responseBody => console.log(responseBody))
 					}
 				})
 		}

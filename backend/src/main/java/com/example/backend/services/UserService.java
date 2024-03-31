@@ -9,6 +9,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -50,5 +54,23 @@ public class UserService {
         if (!passwordEncoder.matches(rawPassword, encodedPasswordFromDB)) {
             throw new AuthenticationFailedException("INVALID_PASSWORD", "Password and username don't match");
         }
+    }
+
+    public Map<String, String> getByUserId(Long userId) {
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+        Map<String, String> data = new HashMap<>();
+
+        if (optionalUser.isPresent()) {
+
+            User user = optionalUser.get();
+
+            data.put("first-name", user.getFirstName());
+            data.put("theme", user.getTheme());
+        }
+        else {
+            data.put("error", "User with this id don't exists");
+        }
+        return data;
     }
 }
