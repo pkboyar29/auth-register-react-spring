@@ -3,6 +3,7 @@ package com.example.backend.services;
 import com.example.backend.dto.AuthRequestDTO;
 import com.example.backend.exceptions.AuthenticationFailedException;
 import com.example.backend.exceptions.DuplicateUserException;
+import com.example.backend.exceptions.ObjectNotFoundException;
 import com.example.backend.models.User;
 import com.example.backend.repositories.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -56,21 +57,30 @@ public class UserService {
         }
     }
 
-    public Map<String, String> getByUserId(Long userId) {
-
+    public Map<String, String> getUserDataByUserId(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         Map<String, String> data = new HashMap<>();
 
-        if (optionalUser.isPresent()) {
-
-            User user = optionalUser.get();
-
-            data.put("first-name", user.getFirstName());
-            data.put("theme", user.getTheme());
-        }
-        else {
+        if (optionalUser.isEmpty()) {
             data.put("error", "User with this id don't exists");
+            return data;
         }
+
+        User user = optionalUser.get();
+        data.put("first-name", user.getFirstName());
+        data.put("theme", user.getTheme());
         return data;
+    }
+
+    public void changeUserTheme(Long userId, String theme) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new ObjectNotFoundException("User with this id don't exists");
+        }
+
+        User user = optionalUser.get();
+        user.setTheme(theme);
+        userRepository.save(user);
     }
 }

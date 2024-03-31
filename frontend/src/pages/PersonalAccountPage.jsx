@@ -87,8 +87,8 @@ function PersonalAccountPage() {
 
 		const newTheme = theme === 'light' ? 'dark' : 'light';
 
-		fetch('http://127.0.0.1:8000/api/user' + '/changeTheme', {
-			method: 'POST',
+		fetch('http://127.0.0.1:8080/api/users' + '/changeTheme', {
+			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${Cookies.get('access_token')}`

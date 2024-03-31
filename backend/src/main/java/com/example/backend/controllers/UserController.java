@@ -1,9 +1,11 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dto.AuthRequestDTO;
+import com.example.backend.dto.ThemeDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.exceptions.AuthenticationFailedException;
 import com.example.backend.exceptions.DuplicateUserException;
+import com.example.backend.exceptions.ObjectNotFoundException;
 import com.example.backend.models.User;
 import com.example.backend.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -81,12 +83,32 @@ public class UserController {
 
     @GetMapping(path = "/{userId}")
     public ResponseEntity<Map<String, String>> get_user_data(@PathVariable Long userId) {
-        Map<String, String> response = userService.getByUserId(userId);
+        Map<String, String> response = userService.getUserDataByUserId(userId);
 
         if (response.containsKey("error")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PutMapping(path = "/{userId}/theme")
+    public ResponseEntity<Map<String, String>> change_theme(@PathVariable Long userId, @RequestBody ThemeDTO requestBody) {
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            userService.changeUserTheme(userId, requestBody.getTheme());
+
+            response.put("message", "Successful");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch (ObjectNotFoundException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        catch (Exception e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }

@@ -9,7 +9,6 @@ public class UserDTO {
     private String ageLimit;
     private String gender;
     private Boolean acceptRules;
-
     public UserDTO() { }
     public String getUsername() {
         return username;
