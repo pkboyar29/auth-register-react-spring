@@ -6,6 +6,7 @@ import com.example.backend.exceptions.DuplicateUserException;
 import com.example.backend.exceptions.ObjectNotFoundException;
 import com.example.backend.models.User;
 import com.example.backend.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,14 +19,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
+    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
-
     public void saveUser(User user) throws DuplicateUserException {
         // дополнительная проверка валидации, бизнес-логика проверок
 

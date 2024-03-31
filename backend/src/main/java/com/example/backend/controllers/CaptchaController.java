@@ -2,6 +2,7 @@ package com.example.backend.controllers;
 
 import com.example.backend.services.CaptchaService;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 @RequestMapping(path = "/api/captcha")
 public class CaptchaController {
     final private CaptchaService captchaService;
+    @Autowired
     public CaptchaController(CaptchaService captchaService) {
         this.captchaService = captchaService;
     }

@@ -6,7 +6,6 @@ public class AuthenticationFailedException extends RuntimeException {
         super(message);
         this.errorCode = errorCode;
     }
-
     public String getErrorCode() {
         return this.errorCode;
     }

@@ -15,12 +15,10 @@ import org.springframework.web.client.RestTemplate;
 public class CaptchaService {
     final private String secretKey;
     final private String verifyUrl;
-
     public CaptchaService(@Value("${recaptcha.secret-key}") String secretKey, @Value("${recaptcha.verify-url}") String verifyUrl) {
         this.secretKey = secretKey;
         this.verifyUrl = verifyUrl;
     }
-
     public JsonNode verifyRecaptchaToken(String token) {
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("secret", secretKey);
