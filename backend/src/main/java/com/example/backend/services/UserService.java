@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     @Autowired
@@ -58,14 +57,13 @@ public class UserService {
 
     public Map<String, String> getUserDataByUserId(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        Map<String, String> data = new HashMap<>();
 
         if (optionalUser.isEmpty()) {
-            data.put("error", "User with this id don't exists");
-            return data;
+            throw new ObjectNotFoundException("User with this id don't exists");
         }
 
         User user = optionalUser.get();
+        Map<String, String> data = new HashMap<>();
         data.put("first-name", user.getFirstName());
         data.put("theme", user.getTheme());
         return data;

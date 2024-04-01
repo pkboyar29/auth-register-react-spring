@@ -41,7 +41,7 @@ public class UserController {
         user.setTheme("light");
         user.setCreated(LocalDateTime.now());
 
-        HashMap<String, String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         try {
             userService.saveUser(user);
@@ -62,7 +62,7 @@ public class UserController {
     @PostMapping(path = "/auth")
     public ResponseEntity<Map<String, String>> authorize(@RequestBody AuthRequestDTO authRequestDTO) {
 
-        HashMap<String, String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         try {
             userService.verifyCredentials(authRequestDTO);
@@ -82,13 +82,22 @@ public class UserController {
 
     @GetMapping(path = "/{userId}")
     public ResponseEntity<Map<String, String>> get_user_data(@PathVariable Long userId) {
-        Map<String, String> response = userService.getUserDataByUserId(userId);
 
-        if (response.containsKey("error")) {
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            response = userService.getUserDataByUserId(userId);
+            response.put("message", "Successful");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch (ObjectNotFoundException e) {
+            response.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        catch (Exception e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @PutMapping(path = "/{userId}/theme")
