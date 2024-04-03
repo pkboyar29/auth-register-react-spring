@@ -51,9 +51,8 @@ function RegisterPage() {
                case 201:
                   return response.json()
                      .then(responseBody => {
-                        const { access_token, refresh_token } = responseBody
-                        Cookies.set('access_token', access_token)
-                        Cookies.set('refresh_token', refresh_token)
+                        console.log(responseBody)
+                        Cookies.set('username', responseBody.username)
                         alert("Регистрация успешна!")
                         navigate('/personal-account')
                      })

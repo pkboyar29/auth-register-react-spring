@@ -42,11 +42,13 @@ public class UserService {
     }
 
     public void verifyCredentials(AuthRequestDTO authRequestDTO) {
-        if (!userRepository.existsByUsername(authRequestDTO.getUsername())) {
+        Optional<User> optionalUser = userRepository.findByUsername(authRequestDTO.getUsername());
+
+        if (optionalUser.isEmpty()) {
             throw new AuthenticationFailedException("DUPLICATE_USERNAME", "User with this username doesn't exists");
         }
 
-        User user = userRepository.findByUsername(authRequestDTO.getUsername());
+        User user = optionalUser.get();
         String rawPassword = authRequestDTO.getPassword();
         String encodedPasswordFromDB = user.getPassword();
 
@@ -55,11 +57,11 @@ public class UserService {
         }
     }
 
-    public Map<String, String> getUserDataByUserId(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public Map<String, String> getUserDataByUserName(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()) {
-            throw new ObjectNotFoundException("User with this id don't exists");
+            throw new ObjectNotFoundException("User with this id don't exist");
         }
 
         User user = optionalUser.get();
@@ -69,11 +71,11 @@ public class UserService {
         return data;
     }
 
-    public void changeUserTheme(Long userId, String theme) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public void changeUserTheme(String username, String theme) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()) {
-            throw new ObjectNotFoundException("User with this id don't exists");
+            throw new ObjectNotFoundException("User with this id don't exist");
         }
 
         User user = optionalUser.get();

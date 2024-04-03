@@ -42,9 +42,8 @@ function AuthPage() {
                case 200:
                   return response.json()
                      .then(responseBody => {
-                        const { access_token, refresh_token } = responseBody
-                        Cookies.set('access_token', access_token)
-                        Cookies.set('refresh_token', refresh_token)
+                        console.log(responseBody)
+                        Cookies.set('username', responseBody.username)
                         navigate('/personal-account')
                      })
                case 409:

@@ -45,6 +45,7 @@ public class UserController {
 
         try {
             userService.saveUser(user);
+            response.put("username", userDTO.getUsername());
             response.put("message", "Successful");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
@@ -66,6 +67,7 @@ public class UserController {
 
         try {
             userService.verifyCredentials(authRequestDTO);
+            response.put("username", authRequestDTO.getUsername());
             response.put("message", "Successful");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
@@ -80,43 +82,42 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/{userId}")
-    public ResponseEntity<Map<String, String>> get_user_data(@PathVariable Long userId) {
+    @GetMapping(path = "/{username}")
+    public ResponseEntity<Map<String, String>> get_user_data(@PathVariable String username) {
 
         Map<String, String> response = new HashMap<>();
 
         try {
-            response = userService.getUserDataByUserId(userId);
+            response = userService.getUserDataByUserName(username);
             response.put("message", "Successful");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         catch (ObjectNotFoundException e) {
             response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response); // это 404 код
         }
         catch (Exception e) {
             response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
         }
     }
 
-    @PutMapping(path = "/{userId}/theme")
-    public ResponseEntity<Map<String, String>> change_theme(@PathVariable Long userId, @RequestBody ThemeDTO requestBody) {
+    @PutMapping(path = "/{username}/theme")
+    public ResponseEntity<Map<String, String>> change_theme(@PathVariable String username, @RequestBody ThemeDTO requestBody) {
         Map<String, String> response = new HashMap<>();
 
         try {
-            userService.changeUserTheme(userId, requestBody.getTheme());
-
+            userService.changeUserTheme(username, requestBody.getTheme());
             response.put("message", "Successful");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         catch (ObjectNotFoundException e) {
             response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response); // это 404 код
         }
         catch (Exception e) {
             response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
         }
     }
 }
