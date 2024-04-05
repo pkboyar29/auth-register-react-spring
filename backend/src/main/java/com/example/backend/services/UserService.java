@@ -24,24 +24,29 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
-    public void saveUser(User user) throws DuplicateUserException {
+    public Long saveUser(User userFromRequest) throws DuplicateUserException {
         // дополнительная проверка валидации, бизнес-логика проверок
 
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+        String encodedPassword = passwordEncoder.encode(userFromRequest.getPassword());
+        userFromRequest.setPassword(encodedPassword);
 
-        if (userRepository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(userFromRequest.getUsername())) {
             throw new DuplicateUserException("DUPLICATE_USERNAME", "User with this username already exists");
         }
 
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(userFromRequest.getEmail())) {
             throw new DuplicateUserException("DUPLICATE_EMAIL", "User with this email already exists");
         }
 
-        userRepository.save(user);
+        userRepository.save(userFromRequest);
+
+        Optional<User> optionalUserFromDB =  userRepository.findByUsername(userFromRequest.getUsername());
+        User userFromDB = optionalUserFromDB.get();
+
+        return userFromDB.getId();
     }
 
-    public void verifyCredentials(AuthRequestDTO authRequestDTO) {
+    public Long verifyCredentials(AuthRequestDTO authRequestDTO) {
         Optional<User> optionalUser = userRepository.findByUsername(authRequestDTO.getUsername());
 
         if (optionalUser.isEmpty()) {
@@ -55,10 +60,12 @@ public class UserService {
         if (!passwordEncoder.matches(rawPassword, encodedPasswordFromDB)) {
             throw new AuthenticationFailedException("INVALID_PASSWORD", "Password and username don't match");
         }
+
+        return user.getId();
     }
 
-    public Map<String, String> getUserDataByUserName(String username) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+    public Map<String, String> getUserDataByUserId(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isEmpty()) {
             throw new ObjectNotFoundException("User with this id don't exist");
@@ -66,13 +73,13 @@ public class UserService {
 
         User user = optionalUser.get();
         Map<String, String> data = new HashMap<>();
-        data.put("first-name", user.getFirstName());
+        data.put("first_name", user.getFirstName());
         data.put("theme", user.getTheme());
         return data;
     }
 
-    public void changeUserTheme(String username, String theme) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+    public void changeUserTheme(Long userId, String theme) {
+        Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isEmpty()) {
             throw new ObjectNotFoundException("User with this id don't exist");

@@ -43,14 +43,14 @@ function AuthPage() {
                   return response.json()
                      .then(responseBody => {
                         console.log(responseBody)
-                        Cookies.set('username', responseBody.username)
+                        Cookies.set('userId', responseBody["body"])
                         navigate('/personal-account')
                      })
                case 409:
                   return response.json()
                      .then(responseBody => {
                         console.log(responseBody)
-                        if (responseBody["error-code"] === "DUPLICATE_USERNAME") {
+                        if (responseBody["error_code"] === "DUPLICATE_USERNAME") {
                            setError('username', {
                               type: 'manual',
                               message: 'Пользователя с таким логином не существует'
@@ -58,7 +58,7 @@ function AuthPage() {
                            recaptchaRef.current.reset()
                            setCaptchaPassed(false)
                         }
-                        if (responseBody["error-code"] === "INVALID_PASSWORD") {
+                        if (responseBody["error_code"] === "INVALID_PASSWORD") {
                            setError('password', {
                               type: 'manual',
                               message: 'Неверный пароль'

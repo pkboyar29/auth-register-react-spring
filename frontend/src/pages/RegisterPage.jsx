@@ -52,7 +52,7 @@ function RegisterPage() {
                   return response.json()
                      .then(responseBody => {
                         console.log(responseBody)
-                        Cookies.set('username', responseBody.username)
+                        Cookies.set('userId', responseBody["body"])
                         alert("Регистрация успешна!")
                         navigate('/personal-account')
                      })
@@ -60,13 +60,13 @@ function RegisterPage() {
                   return response.json()
                      .then(responseBody => {
                         console.log(responseBody)
-                        if (responseBody["error-code"] === "DUPLICATE_USERNAME") {
+                        if (responseBody["error_code"] === "DUPLICATE_USERNAME") {
                            setError('username', {
                               type: 'manual',
                               message: 'Пользователь с таким логином уже существует'
                            })
                         }
-                        if (responseBody["error-code"] === "DUPLICATE_EMAIL") {
+                        if (responseBody["error_code"] === "DUPLICATE_EMAIL") {
                            setError('email', {
                               type: 'manual',
                               message: 'Пользователь с такой электронной почтой уже существует'

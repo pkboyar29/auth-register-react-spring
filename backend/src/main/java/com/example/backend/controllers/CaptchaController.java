@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dto.ResponseBodyDTO;
 import com.example.backend.services.CaptchaService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,22 +21,18 @@ public class CaptchaController {
         this.captchaService = captchaService;
     }
     @PostMapping(path = "/verify-token")
-    public ResponseEntity<Map<String, String>> verify_token(@RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<ResponseBodyDTO> verify_token(@RequestBody Map<String, String> requestBody) {
         String token = requestBody.get("token");
         JsonNode responseFromExternalAPI = captchaService.verifyRecaptchaToken(token);
 
-        Map<String, String> response = new HashMap<>();
         if (responseFromExternalAPI.has("success")) {
             if (Objects.equals(responseFromExternalAPI.get("success").asText(), "true")) {
-                response.put("message", "Token is valid");
-                return ResponseEntity.status(HttpStatus.OK).body(response);
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBodyDTO(null, "Token is valid", null));
             } else {
-                response.put("message", "Token isn't valid");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseBodyDTO(null, "Token isn't valid", null));
             }
         } else {
-            response.put("message", "Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseBodyDTO(null, "Internal server error", null));
         }
     }
 }

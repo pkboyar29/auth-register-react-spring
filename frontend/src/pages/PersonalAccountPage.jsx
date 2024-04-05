@@ -10,8 +10,8 @@ function PersonalAccountPage() {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (Cookies.get('username') !== undefined) {
-			fetch('http://127.0.0.1:8080/api/users/' + Cookies.get('username'), {
+		if (Cookies.get('userId') !== undefined) {
+			fetch('http://127.0.0.1:8080/api/users/' + Cookies.get('userId'), {
 				method: 'GET'
 			})
 				.then(response => {
@@ -20,8 +20,8 @@ function PersonalAccountPage() {
 							return response.json()
 								.then(responseBody => {
 									console.log(responseBody)
-									setFirstName(responseBody['first-name'])
-									setTheme(responseBody['theme'])
+									setFirstName(responseBody['body']['first_name'])
+									setTheme(responseBody['body']['theme'])
 								})
 						default:
 							return response.text()
@@ -34,14 +34,14 @@ function PersonalAccountPage() {
 	const onLogOutHandle = () => {
 		setFirstName('')
 		setTheme('light')
-		Cookies.remove('username')
+		Cookies.remove('userId')
 		navigate('/auth')
 	}
 
 	const handleChangeTheme = () => {
 		const newTheme = theme === 'light' ? 'dark' : 'light';
 
-		fetch('http://127.0.0.1:8080/api/users/' + Cookies.get('username') + '/theme', {
+		fetch('http://127.0.0.1:8080/api/users/' + Cookies.get('userId') + '/theme', {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
@@ -64,7 +64,7 @@ function PersonalAccountPage() {
 
 	return (
 		<div className={theme === 'dark' ? 'darkBackground' : ''}>
-			{Cookies.get('username') !== undefined ? (
+			{Cookies.get('userId') !== undefined ? (
 				<>
 					<div className={"header " + (theme === 'dark' ? "darkHeader" : '')}>
 						<div onClick={handleChangeTheme} className={"header__theme " + (theme === 'dark' ? "darkButton" : '')}>{changeThemeButtonText}</div>

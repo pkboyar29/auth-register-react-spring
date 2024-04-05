@@ -1,6 +1,7 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dto.AuthRequestDTO;
+import com.example.backend.dto.ResponseBodyDTO;
 import com.example.backend.dto.ThemeDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.exceptions.AuthenticationFailedException;
@@ -27,7 +28,7 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping(path = "/register")
-    public ResponseEntity<Map<String, String>> register(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseBodyDTO> register(@RequestBody UserDTO userDTO) {
 
         User user = new User();
         user.setUsername(userDTO.getUsername());
@@ -41,83 +42,60 @@ public class UserController {
         user.setTheme("light");
         user.setCreated(LocalDateTime.now());
 
-        Map<String, String> response = new HashMap<>();
-
         try {
-            userService.saveUser(user);
-            response.put("username", userDTO.getUsername());
-            response.put("message", "Successful");
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            Long userId = userService.saveUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseBodyDTO(userId, "Successful", null));
         }
         catch (DuplicateUserException e) {
-            response.put("message", e.getMessage());
-            response.put("error-code", e.getErrorCode());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // это 409 код
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseBodyDTO(null, e.getMessage(), e.getErrorCode())); // это 409 код
         }
         catch (Exception e) {
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseBodyDTO(null, e.getMessage(), null)); // это 500 код
         }
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity<Map<String, String>> authorize(@RequestBody AuthRequestDTO authRequestDTO) {
-
-        Map<String, String> response = new HashMap<>();
+    public ResponseEntity<ResponseBodyDTO> authorize(@RequestBody AuthRequestDTO authRequestDTO) {
 
         try {
-            userService.verifyCredentials(authRequestDTO);
-            response.put("username", authRequestDTO.getUsername());
-            response.put("message", "Successful");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            Long userId = userService.verifyCredentials(authRequestDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseBodyDTO(userId, "Successful", null));
         }
         catch (AuthenticationFailedException e) {
-            response.put("message", e.getMessage());
-            response.put("error-code", e.getErrorCode());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // это 409 код
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseBodyDTO(null, e.getMessage(), e.getErrorCode())); // это 409 код
         }
         catch (Exception e) {
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseBodyDTO(null, e.getMessage(), null)); // это 500 код
         }
     }
 
-    @GetMapping(path = "/{username}")
-    public ResponseEntity<Map<String, String>> get_user_data(@PathVariable String username) {
-
-        Map<String, String> response = new HashMap<>();
+    @GetMapping(path = "/{userId}")
+    public ResponseEntity<ResponseBodyDTO> get_user_data(@PathVariable Long userId) {
 
         try {
-            response = userService.getUserDataByUserName(username);
-            response.put("message", "Successful");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            Map<String, String> userData = userService.getUserDataByUserId(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseBodyDTO(userData, "Successful", null));
         }
         catch (ObjectNotFoundException e) {
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response); // это 404 код
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseBodyDTO(null, e.getMessage(), null)); // это 404 код
         }
         catch (Exception e) {
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseBodyDTO(null, e.getMessage(), null)); // это 500 код
         }
     }
 
-    @PutMapping(path = "/{username}/theme")
-    public ResponseEntity<Map<String, String>> change_theme(@PathVariable String username, @RequestBody ThemeDTO requestBody) {
-        Map<String, String> response = new HashMap<>();
+    @PutMapping(path = "/{userId}/theme")
+    public ResponseEntity<ResponseBodyDTO> change_theme(@PathVariable Long userId, @RequestBody ThemeDTO requestBody) {
 
         try {
-            userService.changeUserTheme(username, requestBody.getTheme());
-            response.put("message", "Successful");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            userService.changeUserTheme(userId, requestBody.getTheme());
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseBodyDTO(null, "Successful", null));
         }
         catch (ObjectNotFoundException e) {
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response); // это 404 код
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseBodyDTO(null, e.getMessage(), null)); // это 404 код
         }
         catch (Exception e) {
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // это 500 код
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseBodyDTO(null, e.getMessage(), null)); // это 500 код
         }
     }
 }
